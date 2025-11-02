@@ -1,0 +1,19 @@
+services:
+  jupyterlab:
+      build: .
+      container_name: jupyterlab
+      env_file:
+        - ./.env
+      environment:
+        - JUPYTER_TOKEN=${JUPYTER_TOKEN}
+      ports:
+        - "${JUPYTER_PORT:-8888}:8888"
+        - "${SPARK_APP_PORT:-4040}:4040"
+      volumes:
+        - jupyter-data:/opt/workspace
+      networks:
+        - ml-infra-network
+
+volumes:
+  jupyter-data:
+    name: jupyter-data

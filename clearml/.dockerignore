@@ -1,0 +1,6 @@
+# Ignore everything except what we need for config generation
+*
+
+# Include only the necessary files
+!generate_config.sh
+!Dockerfile.config

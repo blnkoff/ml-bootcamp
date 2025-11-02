@@ -1,0 +1,12 @@
+include:
+  - ./jupyter/docker-compose.yml
+  - ./spark/docker-compose.yml
+  - ./clearml/docker-compose.yml
+  - ./minio/docker-compose.yml
+  - ./airflow/docker-compose.yml
+
+networks:
+  # Shared network for all services
+  ml-infra-network:
+    name: ml-infra-network
+    driver: bridge
