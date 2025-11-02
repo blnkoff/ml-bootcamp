@@ -14,6 +14,31 @@ This project includes the following services:
 
 All services are connected via a shared Docker network (`ml-infra-network`) for seamless communication.
 
+## 🔌 Service Ports
+
+| Service | Port | Description |
+|---------|------|-------------|
+| **Airflow** |
+| airflow-apiserver | 8085 | Airflow web UI |
+| flower | 5555 | Celery monitoring UI |
+| **JupyterLab** |
+| jupyterlab | 8888 | JupyterLab web interface |
+| jupyterlab | 4040 | Spark application UI |
+| **Spark** |
+| spark-master | 8080 | Spark master UI |
+| spark-master | 7077 | Spark master connection port |
+| spark-worker-1 | 8081 | Spark worker 1 UI |
+| spark-worker-2 | 8082 | Spark worker 2 UI |
+| **ClearML** |
+| apiserver | 8052 | ClearML API server |
+| webserver | 8051 | ClearML web UI |
+| fileserver | 8050 | ClearML file server |
+| **MinIO** |
+| minio | 9000 | MinIO API |
+| minio | 9001 | MinIO console |
+
+*Note: Ports can be customized via environment variables in respective `.env` files.*
+
 ## 📋 Prerequisites
 
 - Docker (version 20.10+)
@@ -110,7 +135,7 @@ docker-compose up airflow-init
 
 Workflow orchestration platform for managing ML pipelines.
 
-- **Web UI**: http://localhost:8080
+- **Web UI**: http://localhost:8085
 - **Default credentials**: `airflow` / `airflow`
 - **DAGs location**: `airflow/dags/`
 - **Logs**: `airflow/logs/`

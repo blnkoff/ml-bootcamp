@@ -125,7 +125,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "${AIRFLOW_WEBSERVER_PORT:-8082}:8080"
+      - "${AIRFLOW_WEBSERVER_PORT:-8085}:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
       interval: 30s
