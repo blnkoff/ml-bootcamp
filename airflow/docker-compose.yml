@@ -161,6 +161,7 @@ services:
         condition: service_completed_successfully
     networks:
       - airflow-network
+      - ml-infra-network
 
   airflow-dag-processor:
     container_name: airflow-dag-processor
@@ -339,6 +340,8 @@ services:
       - airflow
     depends_on:
       <<: *airflow-common-depends-on
+    networks:
+      - airflow-network
 
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
@@ -364,6 +367,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - airflow-network
 
 volumes:
   postgres-db-volume:
