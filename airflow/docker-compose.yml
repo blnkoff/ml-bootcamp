@@ -78,8 +78,6 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
-  networks:
-    - ml-infra-network
   depends_on:
     &airflow-common-depends-on
     airflow-redis:
@@ -89,6 +87,7 @@ x-airflow-common:
 
 services:
   airflow-postgres:
+    container_name: airflow-postgres
     image: postgres:16
     environment:
       POSTGRES_USER: airflow
@@ -103,11 +102,12 @@ services:
       start_period: 5s
     restart: always
     networks:
-      - ml-infra-network
+      - airflow-network
 
   airflow-redis:
     # Redis is limited to 7.2-bookworm due to licencing change
     # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
+    container_name: airflow-redis
     image: redis:7.2-bookworm
     expose:
       - 6379
@@ -118,8 +118,11 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    networks:
+      - airflow-network
 
   airflow-apiserver:
+    container_name: airflow-apiserver
     <<: *airflow-common
     command: api-server
     env_file:
@@ -137,8 +140,12 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - airflow-network
+      - ml-infra-network
 
   airflow-scheduler:
+    container_name: airflow-scheduler
     <<: *airflow-common
     command: scheduler
     healthcheck:
@@ -152,8 +159,11 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - airflow-network
 
   airflow-dag-processor:
+    container_name: airflow-dag-processor
     <<: *airflow-common
     command: dag-processor
     healthcheck:
@@ -167,8 +177,11 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - airflow-network
 
   airflow-worker:
+    container_name: airflow-worker
     <<: *airflow-common
     command: celery worker
     healthcheck:
@@ -192,8 +205,12 @@ services:
         condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - ml-infra-network
+      - airflow-network
 
   airflow-triggerer:
+    container_name: airflow-triggerer
     <<: *airflow-common
     command: triggerer
     healthcheck:
@@ -207,8 +224,11 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    networks:
+      - airflow-network
 
   airflow-init:
+    container_name: airflow-init
     <<: *airflow-common
     entrypoint: /bin/bash
     env_file:
@@ -301,8 +321,11 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
+    networks:
+      - airflow-network
 
   airflow-cli:
+    container_name: airflow-cli
     <<: *airflow-common
     profiles:
       - debug
@@ -321,6 +344,7 @@ services:
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
   # See: https://docs.docker.com/compose/profiles/
   flower:
+    container_name: flower
     <<: *airflow-common
     command: celery flower
     env_file:
@@ -343,3 +367,8 @@ services:
 
 volumes:
   postgres-db-volume:
+
+networks:
+  airflow-network:
+    name: airflow-network
+    driver: bridge

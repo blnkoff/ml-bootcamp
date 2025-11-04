@@ -87,6 +87,10 @@ services:
   fileserver:
     env_file:
       - ./.env
+    environment:
+      CLEARML_REDIS_SERVICE_HOST: clearml-redis
+      CLEARML_REDIS_SERVICE_PORT: 6379
+      CLEARML__fileserver__delete__allow_batch: "true"
     networks:
       - clearml_backend
       - clearml_frontend
@@ -95,8 +99,6 @@ services:
     - fileserver
     container_name: clearml-fileserver
     image: clearml/server:latest
-    environment:
-      CLEARML__fileserver__delete__allow_batch: "true"
     restart: unless-stopped
     volumes:
     - clearml_logs:/var/log/clearml
@@ -135,8 +137,10 @@ services:
     command:
     - webserver
     container_name: clearml-webserver
-    # environment:
-    #  CLEARML_SERVER_SUB_PATH : clearml-web # Allow Clearml to be served with a URL path prefix.
+    environment:
+      CLEARML_REDIS_SERVICE_HOST: clearml-redis
+      CLEARML_REDIS_SERVICE_PORT: 6379
+    # CLEARML_SERVER_SUB_PATH : clearml-web # Allow Clearml to be served with a URL path prefix.
     image: clearml/server:latest
     restart: unless-stopped
     depends_on:
