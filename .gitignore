@@ -1,6 +1,7 @@
 # Environment files with sensitive data
 .env
 clearml/apiserver.conf
+spark/spark-defaults.conf
 
 # Python
 __pycache__/
